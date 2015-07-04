@@ -1,7 +1,8 @@
 require_relative 'hand'
 
 class Player
-  attr_reader :hand, :pot
+  attr_accessor :hand
+  attr_reader :pot
 
   def initialize hand, pot
     @hand = hand
@@ -28,5 +29,9 @@ class Player
     return 0 if gets.chomp.downcase == "n"
     puts "How much?"
     [pot, gets.to_i.abs].min
+  end
+
+  def pot= num
+    @pot = [0, num].max
   end
 end

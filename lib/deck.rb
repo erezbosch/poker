@@ -19,6 +19,10 @@ class Deck
     @cards.shift(num_cards)
   end
 
+  def shuffle!
+    @cards.shuffle!
+  end
+
   private
 
   def self.standard_deck

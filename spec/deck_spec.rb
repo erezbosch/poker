@@ -49,4 +49,13 @@ describe Deck do
       expect{ small_deck.deal(5) }.to raise_error
     end
   end
+
+  describe '#shuffle' do
+    it "shuffles the deck" do
+      my_deck = Deck.new
+      cards = Deck.new.all_cards
+      my_deck.shuffle!
+      expect(my_deck.all_cards).to_not eq(cards)
+    end
+  end
 end

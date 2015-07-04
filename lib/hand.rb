@@ -35,6 +35,10 @@ class Hand
     replace(array.size)
   end
 
+  def return
+    @deck.return(@cards)
+  end
+
   protected
 
   def frequency_hash

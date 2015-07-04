@@ -64,4 +64,8 @@ POINT_VALUES = {
     return false if other_card.nil?
     other_card.value == value && other_card.suit == suit
   end
+
+  def to_s
+    VALUE_STRINGS[value] + SUIT_STRINGS[suit]
+  end
 end
