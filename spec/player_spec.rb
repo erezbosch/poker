@@ -1,22 +1,17 @@
 require 'rspec'
 require 'player'
 
-
 describe Player do
 
-  let(:test_player) { Player.new }
+  let(:test_player) { Player.new(:hand, :pot) }
 
-  describe "#initialize" do
-    it "is initialized with a hand" do
-      expect(test_player).to respond_to(:hand)
+  context "attributes" do
+    it "has a hand" do
+      expect(test_player.hand).to_not be_nil
     end
 
-    it "is initialized with a pot" do
-      expect(test_player).to respond_to(:pot)
+    it "has a pot" do
+      expect(test_player).to_not be_nil
     end
   end
-
-  describe ""
-
-
 end
