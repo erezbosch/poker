@@ -1,18 +1,8 @@
 require_relative 'card'
 
 class Deck
-  def initialize(cards = Deck.make_deck)
+  def initialize(cards = Deck.standard_deck)
     @cards = cards
-  end
-
-  def self.make_deck
-    new_deck = []
-    Card.suits.each do |suit|
-      Card.values.each do |value|
-        new_deck << Card.new(value, suit)
-      end
-    end
-    new_deck
   end
 
   def all_cards
@@ -27,5 +17,17 @@ class Deck
   def deal num_cards
     raise "That's too many cards!" if num_cards > all_cards.size
     @cards.shift(num_cards)
+  end
+
+  private
+
+  def self.standard_deck
+    new_deck = []
+    Card.suits.each do |suit|
+      Card.values.each do |value|
+        new_deck << Card.new(value, suit)
+      end
+    end
+    new_deck
   end
 end

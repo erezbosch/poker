@@ -1,8 +1,7 @@
 require_relative 'deck'
 
-
 class Hand
-  attr_accessor :cards
+  attr_reader :cards
 
   HAND_LEVELS = [:straight_flush, :four_of_a_kind, :full_house, :flush,
                  :straight, :three_of_a_kind, :two_pair, :pair, :high_card]
@@ -24,53 +23,35 @@ class Hand
     elsif ranking.index(evaluate) < ranking.index(other_hand.evaluate)
       false
     else
-      compare_match(other_hand)
+      compare_cards_in_order_of_frequency(other_hand)
     end
-  end
-
-  def find_high_card
   end
 
   def discard_and_replace(array)
-    if array.size > 3
-      raise StandardError
-    end
-    cards_to_discard = []
-    @cards.each_with_index do |el, index|
-      if array.include?(index)
-        cards_to_discard << @cards[index]
-        @cards[index] = nil
-      end
-    end
-    @cards.compact!
-    @deck.return(cards_to_discard)
-    replace(array.length)
-  end
+    raise "Too many discards" if array.size > 3
+    raise "Discard out of bounds" unless array.all? { |el| el.between?(0, 4) }
 
-  def replace(num)
-    @cards += @deck.deal(num)
+    discard(array)
+    replace(array.size)
   end
 
   protected
 
-  def freq_hash
-    hash = Hash.new
-    points.uniq.each do |value|
+  def frequency_hash
+    points.uniq.each_with_object({}) do |value, hash|
       hash[value] = points.count(value)
     end
-    hash
   end
 
-  def compare_match(other_hand)
-    hashed_hand = self.freq_hash
-    hashed_other = other_hand.freq_hash
-    p hashed_hand, hashed_other
+  def compare_cards_in_order_of_frequency(other_hand)
+    hand_hash = frequency_hash
+    other_hash = other_hand.frequency_hash
 
     (1..4).to_a.reverse.each do |i|
-      my_keys = hashed_hand.keys.select { |k| hashed_hand[k] == i}.sort.reverse
-      other_keys = hashed_other.keys.select { |k| hashed_other[k] == i}.sort.reverse
-      p my_keys, other_keys
-      my_keys.length.times do |j|
+      my_keys = hand_hash.keys.select { |k| hand_hash[k] == i}.sort.reverse
+      other_keys = other_hash.keys.select { |k| other_hash[k] == i}.sort.reverse
+
+      my_keys.size.times do |j|
         if my_keys[j] > other_keys[j]
           return true
         elsif my_keys[j] < other_keys[j]
@@ -79,22 +60,26 @@ class Hand
       end
     end
 
-    # these two hands are a match
+    # these two hands are a match: a doesn't beat b
     false
   end
 
-
-
-
-
   private
+
+  def discard(array)
+    discards = array.sort.reverse.inject([]) do |discards, idx|
+       discards << @cards.delete_at(idx)
+    end
+
+    @deck.return(discards)
+  end
+
+  def replace(num)
+    @cards += @deck.deal(num)
+  end
 
   def suits
     @cards.map(&:suit)
-  end
-
-  def values
-    @cards.map(&:value)
   end
 
   def points
@@ -102,8 +87,10 @@ class Hand
   end
 
   def n_of_a_kind? n
-    values.uniq.any? { |value| values.count(value) == n }
+    points.uniq.any? { |value| points.count(value) == n }
   end
+
+  ## The following methods MUST BE CALLED IN ORDER
 
   def straight_flush?
     straight? && flush?
@@ -114,7 +101,7 @@ class Hand
   end
 
   def full_house?
-    values.uniq.size == 2
+    points.uniq.size == 2
   end
 
   def flush?
@@ -122,7 +109,8 @@ class Hand
   end
 
   def straight?
-    points.sort == (points.min..points.min + 4).to_a || points.sort == [14, 2, 3, 4, 5]
+    return true if points.sort == [14, 2, 3, 4, 5] # ace can be low
+    points.sort == (points.min..points.min + 4).to_a
   end
 
   def three_of_a_kind?
@@ -130,7 +118,7 @@ class Hand
   end
 
   def two_pair?
-    values.uniq.size == 3
+    points.uniq.size == 3
   end
 
   def pair?

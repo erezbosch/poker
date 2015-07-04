@@ -17,7 +17,6 @@ describe Hand do
                             Card.new(:eight, :spades),
                             Card.new(:ten, :hearts)])}
 
-
   let(:two_pair_hand) {Hand.new(deck, [Card.new(:three, :spades),
                                 Card.new(:three, :clubs),
                                 Card.new(:six, :diamonds),
@@ -84,14 +83,8 @@ describe Hand do
                                        Card.new(:deuce, :spades),
                                        Card.new(:six, :hearts)])}
 
-
-
-
-
-
-
   describe '#initialize' do
-    it "with no argument, provides 5 cards" do
+    it "with no cards argument provided, draws 5 cards from the deck" do
       expect(Hand.new(deck).cards.size).to eq(5)
     end
 
@@ -105,26 +98,26 @@ describe Hand do
   end
 
   describe '#beats?' do
-    it "returns that a higher hand beats a lower hand" do
+    it "straight flush beats pair" do
       expect(straight_flush_hand.beats?(pair_hand)).to eq(true)
     end
 
-    it "doesn't allow a lower hand to beat a higher hand" do
+    it "pair doesn't beat three of a kind" do
       expect(pair_hand.beats?(three_of_a_kind_hand)).to eq(false)
     end
 
-    it "looks to see what hand has a higher value for similar hands" do
+    it "higher card value four-of-a-kind beats lower" do
       expect(four_of_a_kind_hand2.beats?(four_of_a_kind_hand)).to eq(false)
     end
 
-    it "looks to see which two pair hand is higher in value" do
+    it "does the same for two-pair hands" do
       expect(two_pair_hand.beats?(two_pair_hand2)).to eq(true)
     end
 
   end
 
   describe '#discard_and_replace' do
-    it "selected cards are discarded" do
+    it "discards selected cards" do
       high_card_hand.discard_and_replace([2])
       expect(high_card_hand.cards.include?(Card.new(:six, :diamonds))).to be false
     end
@@ -138,45 +131,46 @@ describe Hand do
       expect{ high_card_hand.discard_and_replace([0,1,2,3]) }.to raise_error
     end
 
+    it "raises an error if provided indices not between 0, 4" do
+      expect{ high_card_hand.discard_and_replace([-1]) }.to raise_error
+    end
   end
 
   describe '#evaluate' do
-
-    it "identifies a high card hand" do
+    it "identifies a hand with just the high card" do
       expect(high_card_hand.evaluate).to eq(:high_card)
     end
 
-    it "identifies a pair card hand" do
+    it "identifies a pair" do
       expect(pair_hand.evaluate).to eq(:pair)
     end
 
-    it "identifies a two-pair card hand" do
+    it "identifies two pair" do
       expect(two_pair_hand.evaluate).to eq(:two_pair)
     end
 
-    it "identifies a three of a kind card hand" do
+    it "identifies a three of a kind" do
       expect(three_of_a_kind_hand.evaluate).to eq(:three_of_a_kind)
     end
 
-    it "identifies a straight card hand" do
+    it "identifies a straight" do
       expect(straight_hand.evaluate).to eq(:straight)
     end
 
-    it "identifies a flush hand" do
+    it "identifies a flush" do
       expect(flush_hand.evaluate).to eq(:flush)
     end
 
-    it "identifies a full house hand" do
+    it "identifies a full house" do
       expect(full_house_hand.evaluate).to eq(:full_house)
     end
 
-    it "identifies a four of a kind hand" do
+    it "identifies a four of a kind" do
       expect(four_of_a_kind_hand.evaluate).to eq(:four_of_a_kind)
     end
 
-    it "identifies a straight flush hand" do
+    it "identifies a straight flush" do
       expect(straight_flush_hand.evaluate).to eq(:straight_flush)
     end
   end
-
 end

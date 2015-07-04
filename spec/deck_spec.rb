@@ -8,11 +8,11 @@ describe Deck do
 
   describe "#initialize" do
     context "when called without arguments" do
-      it "creates a 52 card deck when called without arguments" do
+      it "creates a 52-card deck" do
         expect(test_deck.all_cards.size).to eq(52)
       end
 
-      it "creates a unique 52-card deck" do
+      it "creates a deck of 52 unique cards" do
         expect(test_deck.all_cards.uniq.size).to eq(52)
       end
     end
@@ -36,7 +36,7 @@ describe Deck do
   end
 
   describe "#deal" do
-    it "takes cards off the deck" do
+    it "takes cards off the top of the deck" do
       expect(small_deck.deal(1)).to eq([1])
     end
 
@@ -45,10 +45,8 @@ describe Deck do
       expect(small_deck.all_cards.size).to eq(2)
     end
 
-    it "does not allow you to deal more cards than the deck has" do
+    it "raises an error if asked to deal more cards than the deck contains" do
       expect{ small_deck.deal(5) }.to raise_error
     end
-
   end
-
 end

@@ -3,9 +3,9 @@ require 'card'
 
 describe Card do
 
-  let(:card) { Card.new(:three, :spades)}
-  let(:card2) { Card.new(:three, :spades)}
-  let(:card3) { Card.new(:four, :hearts)}
+  let(:card) { Card.new(:three, :spades) }
+  let(:card2) { Card.new(:three, :spades) }
+  let(:card3) { Card.new(:four, :hearts) }
 
 
   describe "#initialize" do
@@ -15,7 +15,6 @@ describe Card do
 
     it "requires two arguments" do
       expect { Card.new }.to raise_error(ArgumentError)
-      # maybe ask how to check for multiple arguments?
     end
 
     it "initializes with a value" do
@@ -47,5 +46,4 @@ describe Card do
       expect(card.points).to eq(3)
     end
   end
-
 end
