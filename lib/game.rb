@@ -5,21 +5,11 @@ class Game
   attr_reader :deck
 
   def initialize(num_players = 2)
-    @deck = Deck.new
-    @deck.shuffle!
+    @deck = Deck.new.shuffle!
     @players = Array.new(num_players) { Player.new(Hand.new(@deck), 100) }
     @active_players = @players.dup
     @pot = 0
     @bet = 10
-  end
-
-  def over?
-    @players.map(&:pot).count(0) == @players.count - 1
-  end
-
-  def winner
-    return false unless over?
-    @players.find { |player| player.pot != 0 }
   end
 
   def play
@@ -31,39 +21,63 @@ class Game
     puts "Player #{@players.index(winner)} wins!"
   end
 
+  private
+
+  def over?
+    @players.map(&:pot).count(0) == @players.count - 1
+  end
+
+  def winner
+    return false unless over?
+    @players.find { |player| player.pot != 0 }
+  end
+
   def play_round
-    betting_round
+    return if betting_round
     changing_round
-    betting_round
+    return if betting_round
     battle_round
   end
 
   def battle_round
-    i = @active_players.size
-    i.times do
-      display_player(false, true)
+    @active_players.size.times do
+      display_player(:battle)
       won_round = @active_players.drop(1).map(&:hand).all? do |hand|
         current_player.hand.beats?(hand)
       end
-      if won_round
-        puts "Player #{@players.index(current_player)} won #{@pot}!\n\n"
-        current_player.pot += @pot
-      end
+      record_win if won_round
       next_turn!
     end
   end
 
   def betting_round
-    i = @active_players.size
-    i.times do
-      place_bet
-      next_turn!
+    @active_players.size.times do
+      if last_bettor?
+        fold_payout
+        return true
+      end
+      next_turn! unless place_bet
     end
+    false
+  end
+
+  def last_bettor?
+    @active_players.size == 1
+  end
+
+  def fold_payout
+    display_player(:battle)
+    print "Due to all other players folding, "
+    record_win
+  end
+
+  def record_win
+    puts "Player #{@players.index(current_player)} won #{@pot}!\n\n"
+    current_player.pot += @pot
   end
 
   def changing_round
-    i = @active_players.size
-    i.times do
+    @active_players.size.times do
       change_cards
       next_turn!
     end
@@ -88,11 +102,11 @@ class Game
   end
 
   def place_bet
-    display_player(false)
+    display_player
 
     if current_player.fold?
       @active_players.delete(current_player)
-      return
+      return true
     end
 
     current_player.pot -= @bet
@@ -103,28 +117,30 @@ class Game
 
     @pot += @bet
     current_player.pot -= raise_amount
+
+    false
   end
 
-  def display_player(change, battle = false)
+  def display_player(situation = :bet)
     print "Player #{@players.index(current_player)}: "
     current_player.hand.cards.each { |card| print card.to_s.ljust(5) }
 
 
-    if change
+    if situation == :change
       print "\n" + (" " * 11)
       5.times { |num| print num.to_s.ljust(5) }
-    elsif !battle
-      print "\nYour Pot: #{current_player.pot}  Bet: #{@bet}  Pot: #{@pot}"
-    else
+    elsif situation == :battle
       puts
+    else
+      print "\nYour Pot: #{current_player.pot}  Bet: #{@bet}  Pot: #{@pot}"
     end
     puts
   end
 
   def change_cards
-    display_player(true)
+    display_player(:change)
     current_player.discard
   end
 end
 
-Game.new.play if __FILE__ == $PROGRAM_NAME
+Game.new(3).play if __FILE__ == $PROGRAM_NAME
