@@ -29,9 +29,7 @@ class Deck
   def self.standard_deck
     new_deck = []
     Card.suits.each do |suit|
-      Card.values.each do |value|
-        new_deck << Card.new(value, suit)
-      end
+      Card.values.each { |value| new_deck << Card.new(value, suit) }
     end
     new_deck
   end

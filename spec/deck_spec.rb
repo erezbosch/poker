@@ -52,10 +52,8 @@ describe Deck do
 
   describe '#shuffle' do
     it "shuffles the deck" do
-      my_deck = Deck.new
       cards = Deck.new.all_cards
-      my_deck.shuffle!
-      expect(my_deck.all_cards).to_not eq(cards)
+      expect(test_deck.shuffle!.all_cards).to_not eq(cards)
     end
   end
 end

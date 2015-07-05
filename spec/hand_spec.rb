@@ -106,14 +106,13 @@ describe Hand do
       expect(pair_hand.beats?(three_of_a_kind_hand)).to eq(false)
     end
 
-    it "higher card value four-of-a-kind beats lower" do
+    it "determines which four-of-a-kind is better" do
       expect(four_of_a_kind_hand2.beats?(four_of_a_kind_hand)).to eq(false)
     end
 
-    it "does the same for two-pair hands" do
+    it "evaluates rival two-pair hands" do
       expect(two_pair_hand.beats?(two_pair_hand2)).to eq(true)
     end
-
   end
 
   describe '#discard_and_replace' do
@@ -171,6 +170,14 @@ describe Hand do
 
     it "identifies a straight flush" do
       expect(straight_flush_hand.evaluate).to eq(:straight_flush)
+    end
+  end
+
+  describe '#return' do
+    it "returns cards to the deck" do
+      expect(deck).to receive(:return)
+
+      flush_hand.return
     end
   end
 end

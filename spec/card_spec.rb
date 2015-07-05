@@ -46,4 +46,10 @@ describe Card do
       expect(card.points).to eq(3)
     end
   end
+
+  describe '#to_s' do
+    it "returns a string representation of the card" do
+      expect(card.to_s).to eq("3♠")
+    end
+  end
 end
